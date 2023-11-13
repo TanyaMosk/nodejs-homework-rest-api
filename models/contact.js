@@ -1,7 +1,5 @@
 const { Schema, model } = require("mongoose");
 
-const Joi = require("joi");
-
 const contactSchema = new Schema(
   {
     name: {
@@ -26,25 +24,8 @@ const contactSchema = new Schema(
   { versionKey: false, timestamps: true }
 );
 
-const addContactSchema = Joi.object({
-  name: Joi.string().required(),
-  email: Joi.string().required(),
-  phone: Joi.string().required(),
-  favorite: Joi.boolean(),
-});
-
-const updateFavoriteSchema = Joi.object({
-  favorite: Joi.boolean().required(),
-});
-
-const schemas = {
-  addContactSchema,
-  updateFavoriteSchema,
-};
-
 const Contact = model("contact", contactSchema);
 
 module.exports = {
   Contact,
-  schemas,
 };
