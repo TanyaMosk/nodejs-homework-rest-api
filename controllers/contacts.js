@@ -2,6 +2,11 @@ const { HttpError } = require("../helpers");
 
 const { Contact, schemas } = require("../models/contact");
 
+const {
+  contactValidationSchema,
+  updateFavoriteSchema,
+} = require("../utils/validation");
+
 const listContacts = async (req, res, next) => {
   try {
     const { _id: owner } = req.user;
@@ -10,7 +15,7 @@ const listContacts = async (req, res, next) => {
 
     const query = { owner };
 
-    if (favorite !== undefined) {
+    if (favorite) {
       query.favorite = favorite;
     }
 
@@ -41,7 +46,7 @@ const getContactById = async (req, res, next) => {
 
 const addContact = async (req, res, next) => {
   try {
-    const { error } = schemas.addContactSchema.validate(req.body);
+    const { error } = contactValidationSchema.validate(req.body);
     if (error) {
       throw HttpError(400, "Missing required name field");
     }
@@ -70,7 +75,7 @@ const removeContact = async (req, res, next) => {
 
 const updateContact = async (req, res, next) => {
   try {
-    const { error } = contactSchema.validate(req.body);
+    const { error } = contactValidationSchema.validate(req.body);
     if (error) {
       throw HttpError(400, "Missing fields");
     }
@@ -90,7 +95,7 @@ const updateContact = async (req, res, next) => {
 
 const updateStatusContact = async (req, res, next) => {
   try {
-    const { error } = schemas.updateFavoriteSchema.validate(req.body);
+    const { error } = updateFavoriteSchema.validate(req.body);
     if (error) {
       throw HttpError(400, "Missing fields");
     }

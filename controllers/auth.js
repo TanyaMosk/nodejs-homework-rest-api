@@ -26,8 +26,10 @@ const register = async (req, res, next) => {
     const newUser = await User.create({ ...req.body, password: hashPassword });
 
     res.status(201).json({
-      email: newUser.email,
-      subscription: newUser.subscription,
+      user: {
+        email: newUser.email,
+        subscription: newUser.subscription,
+      },
     });
   } catch (error) {
     next(error);
@@ -38,7 +40,7 @@ const login = async (req, res, next) => {
   try {
     const { error } = schemas.loginSchema.validate(req.body);
     if (error) {
-      throw HttpError(400);
+      throw HttpError(400, "Missing required name field");
     }
 
     const { email, password } = req.body;
@@ -62,8 +64,10 @@ const login = async (req, res, next) => {
     await User.findByIdAndUpdate(user._id, { token });
     res.json({
       token,
-      email: user.email,
-      subscription: user.subscription,
+      user: {
+        email: user.email,
+        subscription: user.subscription,
+      },
     });
   } catch (error) {
     next(error);
@@ -83,9 +87,7 @@ const logout = async (req, res) => {
   const { _id } = req.user;
   await User.findByIdAndUpdate(_id, { token: "" });
 
-  res.json({
-    message: "Logout succes",
-  });
+  res.status(204).json();
 };
 
 const updateSubscription = async (req, res, next) => {
