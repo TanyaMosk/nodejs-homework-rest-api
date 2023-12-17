@@ -29,4 +29,6 @@ router.patch(
   ctrl.updateAvatar
 );
 
+router.post("/forgot-password", ctrl.forgotPassword);
+
 module.exports = router;

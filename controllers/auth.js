@@ -220,6 +220,47 @@ const updateAvatar = async (req, res, next) => {
   }
 };
 
+const forgotPassword = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    console.log(email);
+
+    const { error } = schemas.forgotPasswordSchema.validate({ email });
+    if (error) {
+      throw new HttpError(400, "Invalid email format");
+    }
+
+    const newPassword = nanoid();
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      throw new HttpError(422, "User doesn't exist!");
+    }
+
+    const hashPassword = await bcryptjs.hash(newPassword, 10);
+    user.password = hashPassword;
+    user.verificationToken = nanoid();
+    user.verify = true;
+    await user.save();
+
+    const emailContent = {
+      to: email,
+      subject: "New password",
+      html: `<h2>Your new password:</h2> 
+      <p> ${newPassword}</p>`,
+    };
+
+    await sendEmail(emailContent);
+
+    res.json({
+      message: "New password sent to your email",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   register,
   verifyEmail,
@@ -229,4 +270,5 @@ module.exports = {
   logout,
   updateSubscription,
   updateAvatar,
+  forgotPassword,
 };

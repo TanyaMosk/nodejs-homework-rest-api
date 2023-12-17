@@ -56,11 +56,16 @@ const updateSubscription = Joi.object({
     .required(),
 });
 
+const forgotPasswordSchema = Joi.object({
+  email: Joi.string().required(),
+});
+
 const schemas = {
   registerSchema,
   emailSchema,
   loginSchema,
   updateSubscription,
+  forgotPasswordSchema,
 };
 
 const User = model("user", userSchema);
